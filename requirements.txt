@@ -9,5 +9,9 @@ xgboost
 imbalanced-learn
 joblib
 jupyter
+
+# Dashboard dependencies
+streamlit>=1.28.0
+plotly>=5.17.0
 streamlit
 plotly
