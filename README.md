@@ -4,11 +4,22 @@ This repository contains a single Jupyter notebook (`theft_detection.ipynb`) tha
 
 ## What is included
 
-- `theft_detection.ipynb` — Main notebook implementing the end-to-end pipeline:
+### Core Files
+
+- **`app.py`** — Interactive Streamlit dashboard for visualizing and analyzing theft detection results:
+  - Upload CSV files (risk scores or consumption data)
+  - Interactive visualizations with Plotly
+  - Risk category distribution and top risky consumers
+  - Model performance metrics and confusion matrix
+  - Hourly consumption patterns
+  - Consumer detail tables with filtering
+  - Export filtered results
+
+- **`theft_detection.ipynb`** — Full end-to-end training pipeline:
   - Synthetic data generation with multiple theft patterns
   - Exploratory data analysis and visualizations (saved to `figures/`)
   - Feature engineering (sequence-level stats and temporal features)
-  - Preprocessing, scaling, and train/val/test splits
+  - Preprocessing, scaling, and stratified train/val/test splits
   - Attention-based autoencoder (anomaly detection)
   - LSTM forecaster (sequence prediction)
   - Rule-based detection engine (expert rules)
@@ -46,12 +57,32 @@ Note: The notebook is written to run on Google Colab (GPU optional). Colab alrea
 
 ## Run instructions
 
-Option A — Run in Google Colab (recommended for GPUs):
+### Option A: Streamlit Dashboard (Recommended for Analysis)
+
+The interactive dashboard allows you to upload CSV files and visualize results without running the full pipeline.
+
+1. Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+2. Run the dashboard:
+
+```powershell
+streamlit run app.py
+```
+
+3. Upload your CSV file (consumer risk scores or raw consumption data) through the web interface.
+
+### Option B: Run Notebook in Google Colab (for Training)
+
 1. Upload `theft_detection.ipynb` to Colab.
 2. In Colab runtime: Runtime > Change runtime type > Hardware accelerator: GPU (optional).
 3. Run cells from top to bottom. The notebook contains install commands for missing packages.
 
-Option B — Run locally (Windows / PowerShell):
+### Option C: Run Notebook Locally (Windows / PowerShell)
+
 1. Create and activate a virtual environment (PowerShell):
 
 ```powershell

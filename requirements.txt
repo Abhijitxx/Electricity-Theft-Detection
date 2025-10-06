@@ -9,3 +9,5 @@ xgboost
 imbalanced-learn
 joblib
 jupyter
+streamlit
+plotly
