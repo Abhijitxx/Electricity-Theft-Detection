@@ -12,6 +12,7 @@ from plotly.subplots import make_subplots
 import joblib
 from datetime import datetime
 import os
+from pathlib import Path
 
 # Page configuration
 st.set_page_config(
@@ -403,10 +404,150 @@ def create_consumer_detail_table(df, risk_filter=None):
     return display_df
 
 
+def check_model_availability():
+    """Check if trained models are available locally"""
+    required_files = {
+        'models': [
+            'autoencoder.h5',
+            'best_lstm.h5',
+            'xgboost_model.joblib',
+            'randomforest_model.joblib',
+            'isolationforest_model.joblib'
+        ],
+        'scalers': [
+            'standard_scaler.joblib',
+            'minmax_scaler.joblib',
+            'lstm_scaler.joblib'
+        ],
+        'outputs': [
+            'consumer_risk_scores.csv',
+            'evaluation_results.json'
+        ]
+    }
+    
+    available_files = {}
+    missing_files = {}
+    
+    for directory, files in required_files.items():
+        dir_path = Path(directory)
+        available_files[directory] = []
+        missing_files[directory] = []
+        
+        for file in files:
+            file_path = dir_path / file
+            if file_path.exists():
+                available_files[directory].append(file)
+            else:
+                missing_files[directory].append(file)
+    
+    # Check if all critical files exist
+    has_models = len(missing_files['models']) == 0
+    has_scalers = len(missing_files['scalers']) == 0
+    has_outputs = len(missing_files['outputs']) == 0
+    
+    return {
+        'has_models': has_models,
+        'has_scalers': has_scalers,
+        'has_outputs': has_outputs,
+        'available_files': available_files,
+        'missing_files': missing_files,
+        'all_available': has_models and has_scalers and has_outputs
+    }
+
+
+def show_model_status_sidebar(model_status):
+    """Display model availability status in sidebar"""
+    st.sidebar.markdown("---")
+    st.sidebar.header("🤖 Model Status")
+    
+    if model_status['all_available']:
+        st.sidebar.success("✅ All models loaded")
+        st.sidebar.caption(f"Models: {len(model_status['available_files']['models'])}")
+        st.sidebar.caption(f"Scalers: {len(model_status['available_files']['scalers'])}")
+    else:
+        st.sidebar.warning("⚠️ Models not found")
+        st.sidebar.info("Upload CSV files to visualize results")
+        
+        with st.sidebar.expander("📥 How to get models"):
+            st.markdown("""
+            **From Google Colab:**
+            1. Train models in Colab
+            2. Run the export cell (Section 11)
+            3. Download and extract zip files
+            
+            **Files needed:**
+            - `models.zip`
+            - `scalers.zip`
+            - `outputs.zip`
+            
+            See `COLAB_INTEGRATION.md` for details.
+            """)
+            
+            # Show what's missing
+            for directory, files in model_status['missing_files'].items():
+                if files:
+                    st.caption(f"❌ Missing in {directory}/: {len(files)} files")
+
+
+def show_quick_start_sample():
+    """Show a sample dataset for users to test the dashboard"""
+    st.info("👋 **First time here?** Try uploading a CSV file to get started!")
+    
+    with st.expander("🎯 Generate Sample Data"):
+        st.markdown("""
+        Don't have data yet? Generate a sample risk scores CSV to explore the dashboard features.
+        """)
+        
+        if st.button("Generate Sample Risk Scores"):
+            # Generate sample data
+            np.random.seed(42)
+            n_consumers = 100
+            
+            sample_data = {
+                'consumer_id': [f'C{i:03d}' for i in range(n_consumers)],
+                'ensemble_score': np.random.beta(2, 5, n_consumers),  # Skewed towards lower scores
+                'autoencoder_score': np.random.beta(2, 5, n_consumers),
+                'lstm_score': np.random.beta(2, 5, n_consumers),
+                'rule_score': np.random.beta(2, 5, n_consumers),
+                'ensemble_prediction': np.random.choice([0, 1], n_consumers, p=[0.93, 0.07]),
+                'true_theft_label': np.random.choice([0, 1], n_consumers, p=[0.93, 0.07]),
+                'detection_date': datetime.now().strftime('%Y-%m-%d')
+            }
+            
+            sample_df = pd.DataFrame(sample_data)
+            sample_df['risk_category'] = sample_df['ensemble_score'].apply(categorize_risk)
+            
+            # Save to temp file
+            sample_file = 'sample_risk_scores.csv'
+            sample_df.to_csv(sample_file, index=False)
+            
+            st.success(f"✅ Sample data generated: `{sample_file}`")
+            st.info("Upload this file using the sidebar to see the dashboard in action!")
+            
+            # Show preview
+            st.dataframe(sample_df.head(10), use_container_width=True)
+            
+            # Download button
+            csv = sample_df.to_csv(index=False)
+            st.download_button(
+                label="📥 Download Sample Data",
+                data=csv,
+                file_name=sample_file,
+                mime="text/csv"
+            )
+            
+            return True
+    
+    return False
+
+
 # Main application
 def main():
     st.markdown('<h1 class="main-header">⚡ Electricity Theft Detection Dashboard</h1>', 
                 unsafe_allow_html=True)
+    
+    # Check model availability
+    model_status = check_model_availability()
     
     # Sidebar
     with st.sidebar:
@@ -416,6 +557,9 @@ def main():
             type=['csv'],
             help="Upload consumer risk scores CSV or raw consumption data CSV"
         )
+        
+        # Show model status
+        show_model_status_sidebar(model_status)
         
         st.markdown("---")
         st.header("ℹ️ About")
@@ -436,7 +580,8 @@ def main():
     
     # Main content
     if uploaded_file is None:
-        st.info("👆 Please upload a CSV file using the sidebar to begin analysis")
+        # Show quick start guide
+        show_quick_start_sample()
         
         # Show example of expected data format
         with st.expander("📋 Expected Data Formats"):
@@ -453,6 +598,28 @@ consumer_id,timestamp,consumption_kwh,is_theft
 C001,2024-01-01 00:00:00,2.5,0
 C001,2024-01-01 01:00:00,2.1,0
             """)
+        
+        # Show model status details if models are missing
+        if not model_status['all_available']:
+            st.markdown("---")
+            with st.expander("🔍 Detailed Model Status"):
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("**✅ Available Files:**")
+                    for directory, files in model_status['available_files'].items():
+                        if files:
+                            st.success(f"{directory}/: {len(files)} files")
+                
+                with col2:
+                    st.markdown("**❌ Missing Files:**")
+                    for directory, files in model_status['missing_files'].items():
+                        if files:
+                            st.error(f"{directory}/: {len(files)} files")
+                            for file in files[:3]:  # Show first 3
+                                st.caption(f"  • {file}")
+                            if len(files) > 3:
+                                st.caption(f"  • ... and {len(files) - 3} more")
         
         return
     
