@@ -7,7 +7,7 @@ import {
   LayoutDashboard, 
   Users, 
   BarChart3, 
-  Settings,
+  FileText,
   Zap,
   Upload,
   Menu,
@@ -19,7 +19,7 @@ const navigation = [
   { name: 'Consumer Analysis', href: '/consumers', icon: Users },
   { name: 'Model Performance', href: '/models', icon: BarChart3 },
   { name: 'Upload & Predict', href: '/upload', icon: Upload },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Resources', href: '/settings', icon: FileText },
 ];
 
 export default function Sidebar() {

@@ -404,17 +404,6 @@ export default function UploadPage() {
             </div>
           )}
 
-          {/* Expected Format Info */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">Expected CSV Format:</h3>
-            <div className="text-sm text-blue-800 space-y-1">
-              <p>• File should contain consumption data columns</p>
-              <p>• Required: consumer_id or id column</p>
-              <p>• Include hourly/daily consumption values</p>
-              <p>• Example columns: consumer_id, hour_0, hour_1, ..., hour_23</p>
-            </div>
-          </div>
-
           {/* Upload Button */}
           <div className="mt-6 flex justify-end">
             <button
@@ -438,6 +427,17 @@ export default function UploadPage() {
                 </>
               )}
             </button>
+          </div>
+
+          {/* Expected Format Info */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 className="text-sm font-semibold text-blue-900 mb-2">Expected CSV Format:</h3>
+            <div className="text-sm text-blue-800 space-y-1">
+              <p>• File should contain consumption data columns</p>
+              <p>• Required: consumer_id or id column</p>
+              <p>• Include hourly/daily consumption values</p>
+              <p>• Example columns: consumer_id, hour_0, hour_1, ..., hour_23</p>
+            </div>
           </div>
         </div>
       )}
