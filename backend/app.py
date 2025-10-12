@@ -76,7 +76,13 @@ app = FastAPI(
 # Enable CORS for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "http://localhost:3001", 
+        "http://127.0.0.1:3001",
+        # Add deployed frontend URL if needed
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -814,7 +820,9 @@ async def generate_sample_data(request: DataGenerationRequest):
         consumption_data.to_csv(csv_buffer, index=False)
         csv_content = csv_buffer.getvalue()
         
-        return csv_content
+        # Return as plain text response
+        from fastapi.responses import PlainTextResponse
+        return PlainTextResponse(content=csv_content, media_type='text/csv')
         
     except Exception as e:
         logger.error(f"Data generation error: {str(e)}")
