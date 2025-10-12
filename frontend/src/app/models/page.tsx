@@ -173,25 +173,25 @@ export default function ModelsPage() {
 
       {/* Model Information Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Model Files</h2>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Model Files</h2>
           <div className="space-y-3">
             {Object.entries(pipeline.model_files || {}).map(([model, path]) => (
-              <div key={model} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-900 capitalize">{model}</span>
-                <code className="text-sm text-gray-600 bg-gray-200 px-2 py-1 rounded">{path}</code>
+              <div key={model} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                <span className="font-medium text-gray-900 capitalize text-sm sm:text-base">{model}</span>
+                <code className="text-xs sm:text-sm text-gray-600 bg-gray-200 px-2 py-1 rounded break-all overflow-hidden">{path}</code>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Scaler Files</h2>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Scaler Files</h2>
           <div className="space-y-3">
             {Object.entries(pipeline.scaler_files || {}).map(([scaler, path]) => (
-              <div key={scaler} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-900 capitalize">{scaler}</span>
-                <code className="text-sm text-gray-600 bg-gray-200 px-2 py-1 rounded">{path}</code>
+              <div key={scaler} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                <span className="font-medium text-gray-900 capitalize text-sm sm:text-base">{scaler}</span>
+                <code className="text-xs sm:text-sm text-gray-600 bg-gray-200 px-2 py-1 rounded break-all overflow-hidden">{path}</code>
               </div>
             ))}
           </div>
