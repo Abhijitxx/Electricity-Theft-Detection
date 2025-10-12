@@ -1,0 +1,33 @@
+# Render Blueprint for Electricity Theft Detection System
+# This file defines the infrastructure as code for deploying on Render
+
+services:
+  # Backend API Service
+  - type: web
+    name: theft-detection-backend
+    runtime: python
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: TF_CPP_MIN_LOG_LEVEL
+        value: 2
+    healthCheckPath: /
+    
+  # Frontend Service
+  - type: web
+    name: theft-detection-frontend
+    runtime: node
+    region: oregon
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: PYTHON_API_URL
+        fromService:
+          type: web
+          name: theft-detection-backend
+          property: url
