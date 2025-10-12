@@ -83,14 +83,14 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+        <p className="mt-2 text-sm sm:text-base text-gray-600">
           Real-time electricity theft detection analytics and model performance metrics
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           title="Avg Confidence Score"
           value={`${(evaluation_summary.ensemble_accuracy * 100).toFixed(2)}%`}
@@ -118,37 +118,41 @@ export default function Home() {
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Detection Statistics</h2>
-          <p className="text-sm text-gray-500 mb-4">Based on model predictions (no ground truth labels)</p>
-          <PerformanceChart
-            accuracy={evaluation_summary.ensemble_accuracy}
-            precision={evaluation_summary.ensemble_precision}
-            recall={evaluation_summary.ensemble_recall}
-            f1Score={evaluation_summary.ensemble_f1}
-            auc={evaluation_summary.ensemble_auc}
-          />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Detection Statistics</h2>
+          <p className="text-xs sm:text-sm text-gray-500 mb-4">Based on model predictions (no ground truth labels)</p>
+          <div className="overflow-x-auto">
+            <PerformanceChart
+              accuracy={evaluation_summary.ensemble_accuracy}
+              precision={evaluation_summary.ensemble_precision}
+              recall={evaluation_summary.ensemble_recall}
+              f1Score={evaluation_summary.ensemble_f1}
+              auc={evaluation_summary.ensemble_auc}
+            />
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Risk Distribution</h2>
-          <RiskDistributionChart data={evaluation_summary.risk_distribution} />
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Risk Distribution</h2>
+          <div className="overflow-x-auto">
+            <RiskDistributionChart data={evaluation_summary.risk_distribution} />
+          </div>
         </div>
       </div>
 
       {/* Detection Summary and Additional Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Detection Summary</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-700">{evaluation_summary.confusion_matrix.true_negative}</div>
-              <div className="text-sm text-gray-600">Normal Detected</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Detection Summary</h2>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="p-3 sm:p-4 bg-green-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-green-700">{evaluation_summary.confusion_matrix.true_negative}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Normal Detected</div>
             </div>
-            <div className="p-4 bg-red-50 rounded-lg">
-              <div className="text-2xl font-bold text-red-700">{evaluation_summary.confusion_matrix.true_positive}</div>
-              <div className="text-sm text-gray-600">Theft Detected</div>
+            <div className="p-3 sm:p-4 bg-red-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-red-700">{evaluation_summary.confusion_matrix.true_positive}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Theft Detected</div>
             </div>
           </div>
           <p className="text-xs text-gray-500 mt-4">
@@ -156,8 +160,8 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Model Configuration</h2>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Model Configuration</h2>
           <div className="space-y-4">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Ensemble Weights</h3>

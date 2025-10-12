@@ -1,0 +1,20 @@
+# Keep Render service awake
+name: Keep Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Backend
+        run: |
+          curl -f https://electricity-theft-detection-gwtp.onrender.com/ || echo "Ping failed"
+          
+      - name: Ping Frontend
+        run: |
+          curl -f https://your-frontend-url.onrender.com/ || echo "Ping failed"

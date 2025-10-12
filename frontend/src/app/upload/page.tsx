@@ -281,10 +281,10 @@ export default function UploadPage() {
   const filteredResults = getFilteredResults();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Upload & Predict</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Upload & Predict</h1>
+        <p className="mt-2 text-sm sm:text-base text-gray-600">
           Upload a CSV file or manually enter consumer consumption data to get theft predictions
         </p>
       </div>
@@ -293,21 +293,22 @@ export default function UploadPage() {
       {!results && (
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
-            <nav className="flex -mb-px">
+            <nav className="flex -mb-px overflow-x-auto">
               <button
                 onClick={() => {
                   setActiveTab('upload');
                   setError(null);
                 }}
-                className={`py-4 px-6 text-sm font-medium border-b-2 transition-colors ${
+                className={`py-3 sm:py-4 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'upload'
                     ? 'border-primary-500 text-primary-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center">
-                  <FileSpreadsheet className="h-5 w-5 mr-2" />
-                  Upload CSV File
+                  <FileSpreadsheet className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  <span className="hidden sm:inline">Upload CSV File</span>
+                  <span className="sm:hidden">Upload CSV</span>
                 </div>
               </button>
               <button
@@ -315,15 +316,16 @@ export default function UploadPage() {
                   setActiveTab('manual');
                   setError(null);
                 }}
-                className={`py-4 px-6 text-sm font-medium border-b-2 transition-colors ${
+                className={`py-3 sm:py-4 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'manual'
                     ? 'border-primary-500 text-primary-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center">
-                  <Edit className="h-5 w-5 mr-2" />
-                  Manual Entry
+                  <Edit className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  <span className="hidden sm:inline">Manual Entry</span>
+                  <span className="sm:hidden">Manual</span>
                 </div>
               </button>
             </nav>
@@ -333,8 +335,8 @@ export default function UploadPage() {
 
       {/* Upload Tab */}
       {!results && activeTab === 'upload' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload CSV File</h2>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Upload CSV File</h2>
           
           {/* Drag and Drop Area */}
           <div

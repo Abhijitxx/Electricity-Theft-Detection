@@ -21,28 +21,28 @@ const colorClasses = {
 
 export default function StatCard({ title, value, icon, trend, color = 'primary' }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
       <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{title}</p>
+          <p className="mt-1 sm:mt-2 text-2xl sm:text-3xl font-bold text-gray-900 break-all">{value}</p>
           
           {trend && (
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex items-center flex-wrap">
               {trend.isPositive ? (
-                <TrendingUp className="h-4 w-4 text-success-500 mr-1" />
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-success-500 mr-1" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-danger-500 mr-1" />
+                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-danger-500 mr-1" />
               )}
-              <span className={`text-sm font-medium ${trend.isPositive ? 'text-success-600' : 'text-danger-600'}`}>
+              <span className={`text-xs sm:text-sm font-medium ${trend.isPositive ? 'text-success-600' : 'text-danger-600'}`}>
                 {trend.value}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs last month</span>
+              <span className="text-xs sm:text-sm text-gray-500 ml-1">vs last month</span>
             </div>
           )}
         </div>
         
-        <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
+        <div className={`p-2 sm:p-3 rounded-lg ${colorClasses[color]} flex-shrink-0`}>
           {icon}
         </div>
       </div>

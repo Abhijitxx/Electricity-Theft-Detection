@@ -20,8 +20,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="flex h-screen bg-gray-50">
           <Sidebar />
-          <main className="flex-1 overflow-y-auto">
-            <div className="container mx-auto px-6 py-8">
+          <main className="flex-1 overflow-y-auto w-full lg:w-auto">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pt-16 lg:pt-8">
               {children}
             </div>
           </main>
