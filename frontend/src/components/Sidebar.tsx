@@ -11,7 +11,8 @@ import {
   Zap,
   Upload,
   Menu,
-  X
+  X,
+  FlaskConical
 } from 'lucide-react';
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Consumer Analysis', href: '/consumers', icon: Users },
   { name: 'Model Performance', href: '/models', icon: BarChart3 },
   { name: 'Upload & Predict', href: '/upload', icon: Upload },
+  { name: 'Generate Data', href: '/generate', icon: FlaskConical },
   { name: 'Resources', href: '/settings', icon: FileText },
 ];
 

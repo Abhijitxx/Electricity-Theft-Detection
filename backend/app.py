@@ -671,6 +671,156 @@ async def get_latest_predictions():
     return latest_prediction_results
 
 
+# ========== DATA GENERATION ENDPOINT ==========
+
+class DataGenerationRequest(BaseModel):
+    num_consumers: int
+    days: int
+    theft_rate: float
+
+@app.post("/generate-data")
+async def generate_sample_data(request: DataGenerationRequest):
+    """Generate synthetic electricity consumption data with theft patterns."""
+    try:
+        from scipy.stats import skew, kurtosis
+        
+        # Validate inputs
+        if request.num_consumers < 10 or request.num_consumers > 1000:
+            raise HTTPException(status_code=400, detail="Number of consumers must be between 10 and 1000")
+        if request.days < 7 or request.days > 365:
+            raise HTTPException(status_code=400, detail="Number of days must be between 7 and 365")
+        if request.theft_rate < 0 or request.theft_rate > 0.5:
+            raise HTTPException(status_code=400, detail="Theft rate must be between 0 and 0.5")
+        
+        logger.info(f"Generating data: {request.num_consumers} consumers, {request.days} days, {request.theft_rate*100}% theft rate")
+        
+        def generate_realistic_consumption(consumer_id, days):
+            """Generate realistic hourly consumption with daily/weekly/seasonal patterns"""
+            hours = days * 24
+            timestamps = pd.date_range('2024-01-01', periods=hours, freq='H')
+            
+            # Base consumption per consumer (0.5-5.0 kWh)
+            base_consumption = np.random.uniform(0.5, 5.0)
+            consumption = np.zeros(hours)
+            
+            for i, ts in enumerate(timestamps):
+                hour = ts.hour
+                day_of_week = ts.dayofweek
+                day_of_month = ts.day
+                
+                # Base
+                base = base_consumption
+                
+                # Daily cycle: peaks at 6-9am and 6-10pm
+                if 6 <= hour <= 9:
+                    daily_factor = 1.5 + 0.5 * np.sin(np.pi * (hour - 6) / 3)
+                elif 18 <= hour <= 22:
+                    daily_factor = 1.8 + 0.7 * np.sin(np.pi * (hour - 18) / 4)
+                elif 0 <= hour <= 5:
+                    daily_factor = 0.3 + 0.2 * np.cos(np.pi * hour / 5)
+                else:
+                    daily_factor = 1.0 + 0.3 * np.sin(np.pi * hour / 12)
+                
+                # Weekly effect
+                weekly_factor = 0.9 if (day_of_week >= 5 and 6 <= hour <= 9) else 1.1 if (day_of_week >= 5) else 1.0
+                
+                # Seasonal effect
+                seasonal_factor = 1.0 + 0.15 * np.sin(2 * np.pi * day_of_month / 30)
+                
+                consumption[i] = base * daily_factor * weekly_factor * seasonal_factor
+            
+            # Add noise
+            noise = np.random.normal(0, 0.1 * base_consumption, hours)
+            consumption += noise
+            consumption = np.maximum(consumption, 0.1)  # Minimum consumption
+            
+            return timestamps, consumption, base_consumption
+        
+        def inject_theft_patterns(consumption, timestamps):
+            """Inject various theft patterns"""
+            theft_consumption = consumption.copy()
+            theft_indicators = np.zeros(len(consumption))
+            
+            # Randomly select theft types
+            theft_types = np.random.choice(
+                ['sudden_drop', 'zero_usage', 'night_spikes', 'negative_readings'],
+                np.random.randint(1, 4), replace=False
+            )
+            
+            for theft_type in theft_types:
+                if theft_type == 'sudden_drop':
+                    # 30-50% consumption for 24-168 hours
+                    duration = np.random.randint(24, 169)
+                    start_idx = np.random.randint(0, len(consumption) - duration)
+                    reduction_factor = np.random.uniform(0.3, 0.5)
+                    theft_consumption[start_idx:start_idx + duration] *= reduction_factor
+                    theft_indicators[start_idx:start_idx + duration] = 1
+                    
+                elif theft_type == 'zero_usage':
+                    # Zero consumption for 24-168 hours
+                    duration = np.random.randint(24, 169)
+                    start_idx = np.random.randint(0, len(consumption) - duration)
+                    theft_consumption[start_idx:start_idx + duration] = 0
+                    theft_indicators[start_idx:start_idx + duration] = 1
+                    
+                elif theft_type == 'night_spikes':
+                    # 2-3x consumption during 0-6am
+                    night_indices = [i for i, ts in enumerate(timestamps) if ts.hour <= 6]
+                    if len(night_indices) > 0:
+                        spike_indices = np.random.choice(night_indices, min(30, len(night_indices)), replace=False)
+                        spike_factor = np.random.uniform(2.0, 3.0)
+                        theft_consumption[spike_indices] *= spike_factor
+                        theft_indicators[spike_indices] = 1
+                    
+                elif theft_type == 'negative_readings':
+                    # 1% negative values
+                    num_negative = int(0.01 * len(consumption))
+                    if num_negative > 0:
+                        negative_indices = np.random.choice(len(consumption), num_negative, replace=False)
+                        theft_consumption[negative_indices] = np.random.uniform(-0.5, -0.1, num_negative)
+                        theft_indicators[negative_indices] = 1
+            
+            return theft_consumption, theft_indicators.astype(bool)
+        
+        # Generate dataset
+        all_data = []
+        theft_consumer_ids = np.random.choice(
+            request.num_consumers,
+            size=int(request.num_consumers * request.theft_rate),
+            replace=False
+        )
+        
+        for consumer_id in range(request.num_consumers):
+            timestamps, consumption, base_consumption = generate_realistic_consumption(consumer_id, request.days)
+            is_theft = np.zeros(len(consumption), dtype=bool)
+            
+            if consumer_id in theft_consumer_ids:
+                consumption, is_theft = inject_theft_patterns(consumption, timestamps)
+            
+            consumer_df = pd.DataFrame({
+                'consumer_id': f'C{consumer_id:03d}',
+                'timestamp': timestamps,
+                'consumption_kwh': consumption,
+                'is_theft': is_theft.astype(int)
+            })
+            all_data.append(consumer_df)
+        
+        consumption_data = pd.concat(all_data, ignore_index=True)
+        
+        logger.info(f"Generated {len(consumption_data)} records with {len(theft_consumer_ids)} theft consumers")
+        
+        # Convert to CSV
+        csv_buffer = io.StringIO()
+        consumption_data.to_csv(csv_buffer, index=False)
+        csv_content = csv_buffer.getvalue()
+        
+        return csv_content
+        
+    except Exception as e:
+        logger.error(f"Data generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ========== RUN SERVER ==========
 
 if __name__ == "__main__":
