@@ -444,16 +444,16 @@ export default function UploadPage() {
 
       {/* Manual Entry Tab */}
       {!results && activeTab === 'manual' && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Entry Form */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               {editingIndex !== null ? 'Edit Consumer Data' : 'Add Consumer Data'}
             </h2>
             
             {/* Consumer ID Input */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-4 sm:mb-6">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Consumer ID <span className="text-danger-500">*</span>
               </label>
               <input
@@ -461,28 +461,28 @@ export default function UploadPage() {
                 value={currentConsumerId}
                 onChange={(e) => setCurrentConsumerId(e.target.value)}
                 placeholder="e.g., C001, CONS_001, 12345"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
             {/* Hourly Consumption Data */}
             <div className="mb-6">
-              <div className="flex justify-between items-center mb-3">
-                <label className="block text-sm font-medium text-gray-700">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700">
                   Hourly Consumption (kWh) <span className="text-danger-500">*</span>
                 </label>
                 <button
                   onClick={fillSampleData}
-                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-xs sm:text-sm text-primary-600 hover:text-primary-700 font-medium self-start sm:self-auto"
                 >
                   Fill Sample Data
                 </button>
               </div>
               
-              <div className="grid grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 sm:gap-3">
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i}>
-                    <label className="block text-xs text-gray-600 mb-1">
+                  <div key={i} className="flex flex-col">
+                    <label className="block text-xs text-gray-600 mb-1 truncate">
                       Hour {i}
                     </label>
                     <input
@@ -495,7 +495,7 @@ export default function UploadPage() {
                         setHourlyValues(newValues);
                       }}
                       placeholder="0.0"
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-2 py-1.5 text-xs sm:text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
                 ))}
@@ -503,18 +503,18 @@ export default function UploadPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
               {editingIndex !== null && (
                 <button
                   onClick={handleCancelEdit}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-sm sm:text-base border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
               )}
               <button
                 onClick={handleAddManualEntry}
-                className="flex items-center px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                className="flex items-center justify-center px-4 sm:px-6 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {editingIndex !== null ? 'Update Entry' : 'Add Entry'}

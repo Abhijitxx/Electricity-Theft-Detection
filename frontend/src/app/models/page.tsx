@@ -56,18 +56,18 @@ export default function ModelsPage() {
     : [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Model Performance Analysis</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Model Performance Analysis</h1>
+        <p className="mt-2 text-sm sm:text-base text-gray-600">
           Detailed insights into ensemble model composition and feature importance
         </p>
       </div>
 
       {/* Model Weights - Dual Visualization */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Ensemble Model Weights (Bar)</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Ensemble Model Weights (Bar)</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={ensembleWeights}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -80,8 +80,8 @@ export default function ModelsPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Model Contribution (Radar)</h2>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Model Contribution (Radar)</h2>
           <ResponsiveContainer width="100%" height={300}>
             <RadarChart data={ensembleWeights}>
               <PolarGrid />
@@ -254,15 +254,15 @@ export default function ModelsPage() {
       </div>
 
       {/* All Features List */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">All Features ({pipeline.feature_info?.feature_count || 0})</h2>
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">All Features ({pipeline.feature_info?.feature_count || 0})</h2>
+        <p className="text-xs sm:text-sm text-gray-600 mb-4">
           These features are extracted from consumption data and used by all models in the ensemble.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {(pipeline.feature_info?.feature_names || []).map((feature, index) => (
             <div key={index} className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-primary-300 transition-colors">
-              <div className="text-sm font-medium text-gray-900">{feature}</div>
+              <div className="text-xs sm:text-sm font-medium text-gray-900 break-words overflow-hidden">{feature}</div>
               <div className="text-xs text-gray-500 mt-1">
                 Feature #{index + 1}
               </div>
