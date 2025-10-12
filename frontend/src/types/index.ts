@@ -10,6 +10,7 @@ export interface ConsumerRiskScore {
   ensemble_score: number;
   risk_category: 'Minimal' | 'Low' | 'Medium' | 'High';
   ensemble_prediction: number;
+  prediction?: 'Theft' | 'Normal';
   true_theft_label?: number;
   autoencoder_score: number;
   lstm_score: number;

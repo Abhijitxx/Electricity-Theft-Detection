@@ -693,8 +693,8 @@ async def generate_sample_data(request: DataGenerationRequest):
         # Validate inputs
         if request.num_consumers < 10 or request.num_consumers > 1000:
             raise HTTPException(status_code=400, detail="Number of consumers must be between 10 and 1000")
-        if request.days < 7 or request.days > 365:
-            raise HTTPException(status_code=400, detail="Number of days must be between 7 and 365")
+        if request.days < 1 or request.days > 365:
+            raise HTTPException(status_code=400, detail="Number of days must be between 1 and 365")
         if request.theft_rate < 0 or request.theft_rate > 0.5:
             raise HTTPException(status_code=400, detail="Theft rate must be between 0 and 0.5")
         
@@ -746,6 +746,7 @@ async def generate_sample_data(request: DataGenerationRequest):
             """Inject various theft patterns"""
             theft_consumption = consumption.copy()
             theft_indicators = np.zeros(len(consumption))
+            total_hours = len(consumption)
             
             # Randomly select theft types
             theft_types = np.random.choice(
@@ -755,17 +756,27 @@ async def generate_sample_data(request: DataGenerationRequest):
             
             for theft_type in theft_types:
                 if theft_type == 'sudden_drop':
-                    # 30-50% consumption for 24-168 hours
-                    duration = np.random.randint(24, 169)
-                    start_idx = np.random.randint(0, len(consumption) - duration)
+                    # 30-50% consumption for 24-168 hours (or proportional to total hours)
+                    max_duration = min(168, total_hours // 2)  # At most half the dataset
+                    min_duration = min(24, total_hours // 3)   # At least 1/3 of dataset
+                    if max_duration <= min_duration:
+                        duration = max(1, total_hours // 2)
+                    else:
+                        duration = np.random.randint(min_duration, max_duration + 1)
+                    start_idx = np.random.randint(0, max(1, len(consumption) - duration))
                     reduction_factor = np.random.uniform(0.3, 0.5)
                     theft_consumption[start_idx:start_idx + duration] *= reduction_factor
                     theft_indicators[start_idx:start_idx + duration] = 1
                     
                 elif theft_type == 'zero_usage':
-                    # Zero consumption for 24-168 hours
-                    duration = np.random.randint(24, 169)
-                    start_idx = np.random.randint(0, len(consumption) - duration)
+                    # Zero consumption for 24-168 hours (or proportional to total hours)
+                    max_duration = min(168, total_hours // 2)  # At most half the dataset
+                    min_duration = min(24, total_hours // 3)   # At least 1/3 of dataset
+                    if max_duration <= min_duration:
+                        duration = max(1, total_hours // 2)
+                    else:
+                        duration = np.random.randint(min_duration, max_duration + 1)
+                    start_idx = np.random.randint(0, max(1, len(consumption) - duration))
                     theft_consumption[start_idx:start_idx + duration] = 0
                     theft_indicators[start_idx:start_idx + duration] = 1
                     
@@ -803,17 +814,24 @@ async def generate_sample_data(request: DataGenerationRequest):
             if consumer_id in theft_consumer_ids:
                 consumption, is_theft = inject_theft_patterns(consumption, timestamps)
             
-            consumer_df = pd.DataFrame({
-                'consumer_id': f'C{consumer_id:03d}',
-                'timestamp': timestamps,
-                'consumption_kwh': consumption,
-                'is_theft': is_theft.astype(int)
-            })
-            all_data.append(consumer_df)
+            # Use the last day's consumption to preserve theft patterns
+            # (Averaging smooths out theft indicators making them undetectable)
+            hours_per_day = 24
+            num_days = len(consumption) // hours_per_day
+            
+            # Take the last complete day of data
+            last_day_consumption = consumption[-hours_per_day:]
+            
+            # Create row with consumer_id and 24 hourly columns
+            row_data = {'consumer_id': f'C{consumer_id+1:03d}'}
+            for hour in range(24):
+                row_data[f'hour_{hour}'] = round(last_day_consumption[hour], 1)
+            
+            all_data.append(row_data)
         
-        consumption_data = pd.concat(all_data, ignore_index=True)
+        consumption_data = pd.DataFrame(all_data)
         
-        logger.info(f"Generated {len(consumption_data)} records with {len(theft_consumer_ids)} theft consumers")
+        logger.info(f"Generated {len(consumption_data)} consumers with {len(theft_consumer_ids)} theft consumers")
         
         # Convert to CSV
         csv_buffer = io.StringIO()

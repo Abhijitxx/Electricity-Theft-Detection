@@ -13,9 +13,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!days || days < 7 || days > 365) {
+    if (!days || days < 1 || days > 365) {
       return NextResponse.json(
-        { error: 'Number of days must be between 7 and 365' },
+        { error: 'Number of days must be between 1 and 365' },
         { status: 400 }
       );
     }

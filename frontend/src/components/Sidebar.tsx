@@ -21,7 +21,7 @@ const navigation = [
   { name: 'Model Performance', href: '/models', icon: BarChart3 },
   { name: 'Upload & Predict', href: '/upload', icon: Upload },
   { name: 'Generate Data', href: '/generate', icon: FlaskConical },
-  { name: 'Resources', href: '/settings', icon: FileText },
+  { name: 'Resources', href: '/resources', icon: FileText },
 ];
 
 export default function Sidebar() {

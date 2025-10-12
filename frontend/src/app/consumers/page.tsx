@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, Download, AlertCircle, CheckCircle, X, Info } from 'lucide-react';
+import { Search, Download, AlertCircle, CheckCircle, X, Info, AlertTriangle } from 'lucide-react';
 import { ConsumerRiskScore, TheftRule } from '@/types';
 
 export default function ConsumersPage() {
@@ -450,12 +450,21 @@ export default function ConsumersPage() {
                     </div>
                   ))}
                 </div>
-              ) : (
+              ) : selectedConsumer.ensemble_prediction === 0 ? (
                 <div className="bg-success-50 border border-success-200 rounded-lg p-6 text-center">
                   <CheckCircle className="h-12 w-12 text-success-600 mx-auto mb-3" />
                   <h3 className="font-semibold text-success-900 text-lg">No Theft Indicators Detected</h3>
                   <p className="text-sm text-success-700 mt-2">
                     This consumer's usage pattern appears normal with no suspicious activity detected by the rule-based system.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
+                  <AlertTriangle className="h-12 w-12 text-amber-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-amber-900 text-lg">ML Models Detected Theft Pattern</h3>
+                  <p className="text-sm text-amber-700 mt-2">
+                    The machine learning models (XGBoost, Random Forest, Isolation Forest, LSTM, Autoencoder) detected anomalous patterns in this consumer's data, 
+                    even though no specific rule-based indicators were triggered. This could indicate subtle or complex theft patterns.
                   </p>
                 </div>
               )}

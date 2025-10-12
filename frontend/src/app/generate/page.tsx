@@ -5,7 +5,7 @@ import { Download, FileSpreadsheet, Settings, AlertCircle, CheckCircle, Zap } fr
 
 export default function GenerateDataPage() {
   const [numConsumers, setNumConsumers] = useState(50);
-  const [days, setDays] = useState(30);
+  const [days, setDays] = useState(1);
   const [theftRate, setTheftRate] = useState(20);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,7 @@ export default function GenerateDataPage() {
     }
   };
 
-  const expectedRecords = numConsumers * days * 24;
+  const expectedRecords = numConsumers; // One row per consumer
   const expectedTheftConsumers = Math.round(numConsumers * (theftRate / 100));
 
   return (
@@ -97,19 +97,23 @@ export default function GenerateDataPage() {
           {/* Days */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Number of Days
+              Sampling Period (Days)
             </label>
             <input
               type="number"
-              min="7"
+              min="1"
               max="365"
               value={days}
-              onChange={(e) => setDays(parseInt(e.target.value) || 7)}
+              onChange={(e) => setDays(parseInt(e.target.value) || 1)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Duration of consumption data in days (7-365)
+              Number of days to simulate consumption patterns (1-365 days)
             </p>
+            <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800">
+              💡 <strong>How it works:</strong> The system generates consumption data for the specified number of days, then uses the <strong>last day</strong> in the final dataset. 
+              More days = more realistic patterns (daily cycles, weekly variations, seasonal effects). Recommended: 30-90 days for demo data.
+            </div>
           </div>
 
           {/* Theft Rate */}
@@ -242,19 +246,9 @@ export default function GenerateDataPage() {
                   <td className="px-4 py-3 text-sm text-gray-600">Unique consumer identifier (e.g., C001, C002)</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">timestamp</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">DateTime</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Hourly timestamp of consumption reading</td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">consumption_kwh</td>
+                  <td className="px-4 py-3 text-sm font-mono text-gray-900">hour_0 to hour_23</td>
                   <td className="px-4 py-3 text-sm text-gray-600">Float</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Electricity consumption in kilowatt-hours</td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">is_theft</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Integer (0/1)</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">Ground truth label (1=theft, 0=normal)</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">Average consumption (kWh) for each hour of the day</td>
                 </tr>
               </tbody>
             </table>
@@ -263,13 +257,16 @@ export default function GenerateDataPage() {
           <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Sample Data Preview:</h3>
             <pre className="text-xs text-gray-700 overflow-x-auto">
-{`consumer_id,timestamp,consumption_kwh,is_theft
-C001,2024-01-01 00:00:00,0.523,0
-C001,2024-01-01 01:00:00,0.412,0
-C001,2024-01-01 02:00:00,0.338,0
-C002,2024-01-01 00:00:00,1.245,1
-C002,2024-01-01 01:00:00,0.089,1`}
+{`consumer_id,hour_0,hour_1,hour_2,hour_3,...,hour_22,hour_23
+C001,2.3,2.1,1.9,1.8,...,5.1,3.4
+C002,0.0,0.0,0.0,0.0,...,0.0,0.0
+C003,1.8,1.6,1.5,1.4,...,4.7,3.1`}
             </pre>
+            <p className="text-xs text-gray-600 mt-2">
+              • One row per consumer<br />
+              • 24 columns (hour_0 to hour_23) representing average hourly consumption<br />
+              • Values are averaged across all days to show typical consumption pattern
+            </p>
           </div>
         </div>
       </div>
