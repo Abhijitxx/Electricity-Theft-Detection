@@ -4,24 +4,35 @@ import { useEffect, useState } from 'react';
 import { Zap } from 'lucide-react';
 
 export default function LoadingAnimation() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Start fade out after 2 seconds
-    const fadeTimer = setTimeout(() => {
-      setFadeOut(true);
-    }, 2000);
+    // Check if this is the first load in this session
+    const hasLoaded = sessionStorage.getItem('ampere-initial-load');
+    
+    if (!hasLoaded) {
+      // Show loading animation only on first load
+      setIsLoading(true);
+      
+      // Mark as loaded in session storage
+      sessionStorage.setItem('ampere-initial-load', 'true');
+      
+      // Start fade out after 2 seconds
+      const fadeTimer = setTimeout(() => {
+        setFadeOut(true);
+      }, 2000);
 
-    // Remove loading screen after fade out completes
-    const removeTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
+      // Remove loading screen after fade out completes
+      const removeTimer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2500);
 
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(removeTimer);
-    };
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(removeTimer);
+      };
+    }
   }, []);
 
   if (!isLoading) return null;
