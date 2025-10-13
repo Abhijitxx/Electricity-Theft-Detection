@@ -54,7 +54,7 @@ export async function GET() {
       ensemble_score: pred.ensemble_score,
       risk_category: pred.risk_category,
       ensemble_prediction: pred.ensemble_prediction,
-      true_theft_label: pred.ensemble_prediction, // No ground truth available
+      true_theft_label: pred.true_theft_label ?? pred.ensemble_prediction, // Use ground truth if available, otherwise use prediction
       autoencoder_score: pred.autoencoder_score,
       lstm_score: pred.lstm_score,
       xgboost_score: pred.xgboost_score,

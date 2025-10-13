@@ -363,6 +363,7 @@ export default function UploadPage() {
               accept=".csv"
               onChange={handleFileChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              style={{ pointerEvents: file ? 'none' : 'auto' }}
             />
             
             <div className="space-y-4">
@@ -385,7 +386,7 @@ export default function UploadPage() {
                       e.stopPropagation();
                       setFile(null);
                     }}
-                    className="inline-flex items-center px-3 py-1 text-sm text-danger-600 hover:text-danger-700"
+                    className="relative z-10 inline-flex items-center px-3 py-1 text-sm text-danger-600 hover:text-danger-700 hover:bg-danger-50 rounded transition-colors"
                   >
                     <X className="h-4 w-4 mr-1" />
                     Remove
