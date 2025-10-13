@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { Download, FileSpreadsheet, Settings, AlertCircle, CheckCircle, Zap } from 'lucide-react';
+import { useSystem } from '@/context/SystemContext';
 
 export default function GenerateDataPage() {
+  const { setSystemOnline } = useSystem();
   const [numConsumers, setNumConsumers] = useState(50);
   const [days, setDays] = useState(1);
   const [theftRate, setTheftRate] = useState(20);
@@ -46,6 +48,9 @@ export default function GenerateDataPage() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+
+      // Set system online after successful data generation
+      setSystemOnline(true);
 
       setSuccess(true);
       setGeneratedFile(a.download);
@@ -140,31 +145,6 @@ export default function GenerateDataPage() {
           </div>
         </div>
 
-        {/* Preview Statistics */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <h3 className="text-sm font-semibold text-blue-900 mb-3">Expected Dataset:</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="flex flex-col">
-              <span className="text-xs text-blue-700">Total Records</span>
-              <span className="text-lg font-bold text-blue-900">
-                {expectedRecords.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs text-blue-700">Theft Consumers</span>
-              <span className="text-lg font-bold text-blue-900">
-                {expectedTheftConsumers} / {numConsumers}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs text-blue-700">Normal Consumers</span>
-              <span className="text-lg font-bold text-blue-900">
-                {numConsumers - expectedTheftConsumers} / {numConsumers}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Generate Button */}
         <div className="mt-6">
           <button
@@ -188,6 +168,31 @@ export default function GenerateDataPage() {
               </>
             )}
           </button>
+        </div>
+
+        {/* Preview Statistics */}
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h3 className="text-sm font-semibold text-blue-900 mb-3">Expected Dataset:</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="flex flex-col">
+              <span className="text-xs text-blue-700">Total Records</span>
+              <span className="text-lg font-bold text-blue-900">
+                {expectedRecords.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-blue-700">Theft Consumers</span>
+              <span className="text-lg font-bold text-blue-900">
+                {expectedTheftConsumers} / {numConsumers}
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-blue-700">Normal Consumers</span>
+              <span className="text-lg font-bold text-blue-900">
+                {numConsumers - expectedTheftConsumers} / {numConsumers}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Error Message */}

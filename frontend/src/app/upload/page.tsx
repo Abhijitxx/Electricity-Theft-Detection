@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, Download, X, Edit, Plus, Trash2 } from 'lucide-react';
+import { useSystem } from '@/context/SystemContext';
 
 interface PredictionResult {
   consumer_id: string;
@@ -23,6 +24,7 @@ interface ManualEntry {
 
 export default function UploadPage() {
   const router = useRouter();
+  const { setSystemOnline } = useSystem();
   const [activeTab, setActiveTab] = useState<'upload' | 'manual'>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -101,6 +103,9 @@ export default function UploadPage() {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to process file');
       }
+
+      // Set system online after successful upload
+      setSystemOnline(true);
 
       // Redirect to consumer analysis page after successful prediction
       router.push('/consumers');
@@ -207,6 +212,9 @@ export default function UploadPage() {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to process data');
       }
+
+      // Set system online after successful manual entry
+      setSystemOnline(true);
 
       // Redirect to consumer analysis page after successful prediction
       router.push('/consumers');

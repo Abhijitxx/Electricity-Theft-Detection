@@ -1,7 +1,7 @@
 {
-  "name": "electricity-theft-detection-frontend",
+  "name": "ampere-ai-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Electricity Theft Detection System",
+  "description": "Ampere.ai - Intelligent Electricity Theft Detection System",
   "private": true,
   "scripts": {
     "dev": "next dev",
