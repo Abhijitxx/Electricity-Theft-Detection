@@ -14,7 +14,8 @@ import {
   Upload,
   Menu,
   X,
-  FlaskConical
+  FlaskConical,
+  Cog
 } from 'lucide-react';
 
 const navigation = [
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Upload', href: '/upload', icon: Upload },
   { name: 'Generate', href: '/generate', icon: FlaskConical },
   { name: 'Resources', href: '/resources', icon: FileText },
+  { name: 'Working', href: '/working', icon: Cog },
 ];
 
 export default function ClientLayout({ children }: { children: ReactNode }) {

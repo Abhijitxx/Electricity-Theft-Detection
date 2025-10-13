@@ -1,6 +1,29 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 export default function ResourcesPage() {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        // Send keyboard event to iframe
+        if (iframeRef.current) {
+          try {
+            // Try to focus the iframe so it receives keyboard events
+            iframeRef.current.focus();
+          } catch (error) {
+            console.log('Could not focus iframe:', error);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -8,6 +31,55 @@ export default function ResourcesPage() {
         <p className="mt-2 text-sm sm:text-base text-gray-600">
           Access project documentation, research papers, and source code
         </p>
+      </div>
+
+      {/* Project Presentation */}
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+          Project Presentation
+        </h2>
+        
+        {/* Embedded Presentation */}
+        <div className="mb-4">
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Interactive Presentation</h3>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">View the complete project presentation slides</p>
+              </div>
+              <a
+                href="https://www.canva.com/design/DAG1dvnoYpk/5qwY9Ft_KJdb9wWTH2lJ0Q/edit?utm_content=DAG1dvnoYpk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm whitespace-nowrap"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Open in Canva
+              </a>
+            </div>
+            
+            {/* Embedded iFrame - Dynamic viewport-based height */}
+            <div className="relative w-full overflow-hidden rounded-lg border-2 border-orange-300" style={{ height: 'calc(100vh - 300px)', minHeight: '500px', maxHeight: '800px' }}>
+              <iframe
+                ref={iframeRef}
+                loading="lazy"
+                className="absolute top-0 left-0 w-full h-full"
+                src="https://www.canva.com/design/DAG1dvnoYpk/5qwY9Ft_KJdb9wWTH2lJ0Q/view?embed"
+                allow="fullscreen"
+                allowFullScreen
+                tabIndex={0}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              💡 Click inside the presentation and use ← → arrow keys or navigation arrows to browse slides. Click "Open in Canva" for full-screen view.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Downloads Section */}

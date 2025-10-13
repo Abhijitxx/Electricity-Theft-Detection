@@ -7,7 +7,6 @@ import StatCard from '@/components/StatCard';
 import PerformanceChart from '@/components/PerformanceChart';
 import RiskDistributionChart from '@/components/RiskDistributionChart';
 import ConfusionMatrixChart from '@/components/ConfusionMatrixChart';
-import PipelineFlowChart from '@/components/PipelineFlowChart';
 
 export default function Home() {
   const [evaluation, setEvaluation] = useState<EvaluationResults | null>(null);
@@ -208,13 +207,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Detection Pipeline Flow */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Detection Pipeline Architecture</h2>
-        <p className="text-sm text-gray-500 mb-6">Visual representation of how the ensemble model processes consumer data</p>
-        <PipelineFlowChart threshold={pipeline.pipeline_config?.CLASSIFICATION_THRESHOLD || 0.4296} />
       </div>
 
       {/* Ensemble Score Card */}
